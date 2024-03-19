@@ -1,5 +1,13 @@
 name: Build Docker Images
 
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
 matrix:
   platform: ['x86_64', 'aarch64']
   include:
