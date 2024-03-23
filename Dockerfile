@@ -1,6 +1,7 @@
 ARG ARCH="x86_64"
+ARG VER="2_28"
 
-FROM quay.io/pypa/manylinux_2_28_${ARCH}
+FROM quay.io/pypa/manylinux_${VER}_${ARCH}
 
 ARG ARCH
 ARG EPICS_VERSION="7.0.8"

@@ -10,26 +10,26 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
-    name: build ((${{ matrix.platform}})
+    name: build ((${{ matrix.platform.docker_platform}})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform: ['x86_64', 'aarch64']
-        include:
-          - arch: "AMD64"
-            platform: "x86_64"
-          - arch: "ARM64"
-            platform: "aarch64"
-
+        version: ["2_28"]
+        platform:
+          - arch: "x86_64"
+            runner_arch: "X64"
+            docker_platform: "linux/amd64"
+          - arch: 'aarch64'
+            runner_arch: "ARM64"
+            docker_platform: "linux/arm64"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up QEMU
-        if:  ${{ env.RUNNER_ARCH }} != ${{ matrix.arch }}
+        if:  ${{ env.RUNNER_ARCH }} != ${{ matrix.platform.runner_arch }}
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -44,14 +44,15 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/manylinux_${{ matrix.version }}_conda_epics
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.platform.docker_platform }}
           push: ${{ github.event_name != 'pull_request' }}
           build-args: |
-              ARCH=${{ matrix.platform }}
+              VER=${{ matrix.version }}
+              ARCH=${{ matrix.platform.arch }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
