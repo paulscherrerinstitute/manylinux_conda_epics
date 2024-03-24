@@ -11,7 +11,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  MANYLINUX_VERSION: "2014"
+  MANYLINUX_VERSION: "2_28"
 
 jobs:
   build:
@@ -23,9 +23,9 @@ jobs:
           - arch: "x86_64"
             runner_arch: "X64"
             docker_platform: "linux/amd64"
-#          - arch: 'aarch64'
-#            runner_arch: "ARM64"
-#            docker_platform: "linux/arm64"
+          - arch: 'aarch64'
+            runner_arch: "ARM64"
+            docker_platform: "linux/arm64"
     steps:
       - name: Prepare
         run: |
